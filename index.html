@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockMarket Sim — Marketplace Stock Simulation</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Lucide Icons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide-static/0.363.0/umd/lucide.min.js"></script>
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.2/chart.umd.min.js"></script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ MOBILE TOP BAR ============ -->
+<header class="mobile-topbar">
+  <button id="hamburgerBtn" class="icon-btn" aria-label="Buka menu">
+    <i data-lucide="menu"></i>
+  </button>
+  <div class="mobile-brand">
+    <span class="brand-mark">SM</span>
+    <span class="brand-name">StockMarket Sim</span>
+  </div>
+  <button id="themeToggleMobile" class="icon-btn" aria-label="Ganti tema">
+    <i data-lucide="moon"></i>
+  </button>
+</header>
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <span class="brand-mark">SM</span>
+        <div>
+          <div class="brand-name">StockMarket Sim</div>
+          <div class="brand-sub">Marketplace Stock Simulation</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-page="dashboard">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-page="produk">
+        <i data-lucide="package"></i><span>Produk</span>
+      </button>
+      <button class="nav-item" data-page="penjualan">
+        <i data-lucide="shopping-cart"></i><span>Penjualan</span>
+      </button>
+      <button class="nav-item" data-page="statistik">
+        <i data-lucide="bar-chart-3"></i><span>Statistik</span>
+      </button>
+      <button class="nav-item" data-page="riwayat">
+        <i data-lucide="receipt"></i><span>Riwayat Transaksi</span>
+      </button>
+      <button class="nav-item" data-page="pengaturan">
+        <i data-lucide="settings"></i><span>Pengaturan</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="themeToggleDesktop" class="theme-toggle">
+        <i data-lucide="sun" class="icon-sun"></i>
+        <i data-lucide="moon" class="icon-moon"></i>
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      </button>
+      <p class="footer-note">StockMarket Sim — Marketplace Stock Simulation<br>Educational Project • Class 10 SMA</p>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- ============ DASHBOARD PAGE ============ -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <h1>Welcome back 👋</h1>
+          <p class="page-subtitle">Toko Kelas 10 — begini kondisi tokomu hari ini.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card stagger">
+          <div class="stat-icon icon-indigo"><i data-lucide="package"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Total Produk</span>
+            <span class="stat-value" id="statTotalProduk">0</span>
+          </div>
+        </div>
+        <div class="stat-card stagger">
+          <div class="stat-icon icon-cyan"><i data-lucide="boxes"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Total Stok</span>
+            <span class="stat-value" id="statTotalStok">0</span>
+          </div>
+        </div>
+        <div class="stat-card stagger">
+          <div class="stat-icon icon-green"><i data-lucide="wallet"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Total Penjualan</span>
+            <span class="stat-value" id="statTotalPenjualan">Rp0</span>
+          </div>
+        </div>
+        <div class="stat-card stagger">
+          <div class="stat-icon icon-purple"><i data-lucide="receipt-text"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Transaksi</span>
+            <span class="stat-value" id="statTotalTransaksi">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Grafik Penjualan Mingguan</h3>
+            <span class="card-tag">7 Hari Terakhir</span>
+          </div>
+          <canvas id="chartPenjualan" height="220"></canvas>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header">
+            <h3>Produk Terlaris</h3>
+          </div>
+          <canvas id="chartTerlaris" height="220"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRODUK PAGE ============ -->
+    <section class="page" id="page-produk">
+      <div class="page-header">
+        <div>
+          <h1>Produk</h1>
+          <p class="page-subtitle">Kelola daftar produk tokomu.</p>
+        </div>
+        <button class="btn btn-primary" id="btnTambahProduk">
+          <i data-lucide="plus"></i> Tambah Produk
+        </button>
+      </div>
+
+      <div class="toolbar card">
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="searchProduk" placeholder="Cari produk...">
+        </div>
+        <select id="filterKategori" class="select-input">
+          <option value="Semua">Semua Kategori</option>
+          <option value="Fashion">Fashion</option>
+          <option value="Elektronik">Elektronik</option>
+          <option value="Makanan">Makanan</option>
+          <option value="Aksesoris">Aksesoris</option>
+        </select>
+        <select id="sortProduk" class="select-input">
+          <option value="default">Urutkan</option>
+          <option value="harga-asc">Harga Terendah</option>
+          <option value="harga-desc">Harga Tertinggi</option>
+          <option value="stok-desc">Stok Terbanyak</option>
+          <option value="stok-asc">Stok Tersedikit</option>
+          <option value="nama-asc">Nama A-Z</option>
+        </select>
+      </div>
+
+      <div class="card table-card">
+        <div class="table-scroll">
+          <table class="data-table" id="tabelProduk">
+            <thead>
+              <tr>
+                <th>Produk</th>
+                <th>Kategori</th>
+                <th class="text-right">Harga</th>
+                <th class="text-right">Stok</th>
+                <th>Status</th>
+                <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tabelProdukBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="emptyProduk" hidden>
+          <div class="empty-icon">📦</div>
+          <h3>Belum ada produk</h3>
+          <p>Tambahkan produk pertamamu untuk memulai simulasi.</p>
+          <button class="btn btn-primary" id="btnTambahProdukEmpty"><i data-lucide="plus"></i> Tambah Produk</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PENJUALAN PAGE ============ -->
+    <section class="page" id="page-penjualan">
+      <div class="page-header">
+        <div>
+          <h1>Simulasi Penjualan</h1>
+          <p class="page-subtitle">Simulasikan transaksi penjualan produk.</p>
+        </div>
+      </div>
+
+      <div class="sale-grid">
+        <div class="card sale-form">
+          <div class="form-group">
+            <label for="saleProduk">Produk</label>
+            <select id="saleProduk" class="select-input"></select>
+          </div>
+          <div class="sale-info-row">
+            <div class="sale-info">
+              <span class="sale-info-label">Harga</span>
+              <span class="sale-info-value" id="saleHarga">Rp0</span>
+            </div>
+            <div class="sale-info">
+              <span class="sale-info-label">Stok Tersedia</span>
+              <span class="sale-info-value" id="saleStok">0</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="saleJumlah">Jumlah Terjual</label>
+            <input type="number" id="saleJumlah" min="1" value="1">
+          </div>
+          <div class="sale-total-box">
+            <span>Total</span>
+            <span id="saleTotal">Rp0</span>
+          </div>
+          <p class="sale-warning" id="saleWarning" hidden></p>
+          <button class="btn btn-primary btn-block" id="btnSimulasikan">
+            <i data-lucide="check-circle-2"></i> Simulasikan Penjualan
+          </button>
+        </div>
+
+        <div class="card sale-preview">
+          <div class="card-header"><h3>Pratinjau Produk</h3></div>
+          <div class="preview-body">
+            <img id="salePreviewImg" src="" alt="" class="preview-img">
+            <h4 id="salePreviewNama">—</h4>
+            <p id="salePreviewDeskripsi" class="preview-desc">Pilih produk untuk melihat detail.</p>
+            <span class="badge" id="salePreviewKategori"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STATISTIK PAGE ============ -->
+    <section class="page" id="page-statistik">
+      <div class="page-header">
+        <div>
+          <h1>Statistik</h1>
+          <p class="page-subtitle">Ringkasan performa toko secara keseluruhan.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-green"><i data-lucide="trending-up"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Total Omzet</span>
+            <span class="stat-value" id="statOmzet">Rp0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-indigo"><i data-lucide="package-check"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Produk Terjual</span>
+            <span class="stat-value" id="statProdukTerjual">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-purple"><i data-lucide="receipt-text"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Jumlah Transaksi</span>
+            <span class="stat-value" id="statJumlahTransaksi">0</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-red"><i data-lucide="alert-triangle"></i></div>
+          <div class="stat-body">
+            <span class="stat-label">Stok Paling Sedikit</span>
+            <span class="stat-value" id="statStokSedikit">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="card chart-card">
+          <div class="card-header"><h3>Produk Paling Laris</h3></div>
+          <canvas id="chartStatTerlaris" height="230"></canvas>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header"><h3>Tren Penjualan</h3></div>
+          <canvas id="chartStatTren" height="230"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RIWAYAT PAGE ============ -->
+    <section class="page" id="page-riwayat">
+      <div class="page-header">
+        <div>
+          <h1>Riwayat Transaksi</h1>
+          <p class="page-subtitle">Semua transaksi penjualan yang tercatat.</p>
+        </div>
+      </div>
+
+      <div class="toolbar card">
+        <div class="search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="searchRiwayat" placeholder="Cari transaksi (produk/kategori)...">
+        </div>
+        <input type="date" id="filterTanggal" class="select-input">
+      </div>
+
+      <div class="card table-card">
+        <div class="table-scroll">
+          <table class="data-table" id="tabelRiwayat">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tanggal</th>
+                <th>Produk</th>
+                <th class="text-right">Jumlah</th>
+                <th class="text-right">Harga</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="tabelRiwayatBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="emptyRiwayat" hidden>
+          <div class="empty-icon">🧾</div>
+          <h3>Belum ada transaksi</h3>
+          <p>Transaksi akan muncul di sini setelah kamu melakukan simulasi penjualan.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PENGATURAN PAGE ============ -->
+    <section class="page" id="page-pengaturan">
+      <div class="page-header">
+        <div>
+          <h1>Pengaturan</h1>
+          <p class="page-subtitle">Konfigurasi koneksi Google Spreadsheet dan preferensi tampilan.</p>
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-header"><h3>Koneksi Google Spreadsheet</h3></div>
+        <p class="settings-desc">
+          Status koneksi saat ini: <strong id="connStatus">Mode Lokal (localStorage)</strong>.
+          URL Google Apps Script diatur langsung di <code>script.js</code> pada variabel
+          <code>GOOGLE_SCRIPT_URL</code>. Lihat README untuk tutorial lengkap.
+        </p>
+        <div class="settings-row">
+          <button class="btn btn-secondary" id="btnTestConn"><i data-lucide="plug-zap"></i> Tes Koneksi</button>
+          <button class="btn btn-secondary" id="btnResetData"><i data-lucide="rotate-ccw"></i> Reset Data Lokal</button>
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-header"><h3>Tampilan</h3></div>
+        <div class="settings-row settings-theme-row">
+          <span>Tema Website</span>
+          <button id="themeToggleSettings" class="theme-toggle">
+            <i data-lucide="sun" class="icon-sun"></i>
+            <i data-lucide="moon" class="icon-moon"></i>
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="card-header"><h3>Tentang Project</h3></div>
+        <p class="settings-desc">
+          StockMarket Sim adalah simulasi marketplace sederhana untuk tugas sekolah kelas 10 SMA.
+          Data produk dan transaksi dapat disimpan secara lokal (localStorage) atau dikirim ke
+          Google Spreadsheet melalui Google Apps Script Web App.
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ MOBILE BOTTOM NAV ============ -->
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" data-page="dashboard"><i data-lucide="layout-dashboard"></i><span>Home</span></button>
+  <button class="bottom-nav-item" data-page="produk"><i data-lucide="package"></i><span>Produk</span></button>
+  <button class="bottom-nav-item" data-page="penjualan"><i data-lucide="shopping-cart"></i><span>Jual</span></button>
+  <button class="bottom-nav-item" data-page="riwayat"><i data-lucide="receipt"></i><span>Riwayat</span></button>
+  <button class="bottom-nav-item" data-page="pengaturan"><i data-lucide="settings"></i><span>Atur</span></button>
+</nav>
+
+<!-- ============ MODAL: TAMBAH/EDIT PRODUK ============ -->
+<div class="modal-overlay" id="modalProduk">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalProdukTitle">Tambah Produk</h3>
+      <button class="icon-btn" id="closeModalProduk"><i data-lucide="x"></i></button>
+    </div>
+    <form id="formProduk" class="modal-body">
+      <input type="hidden" id="produkId">
+      <div class="form-group">
+        <label for="inputNama">Nama Produk</label>
+        <input type="text" id="inputNama" required placeholder="Contoh: Kaos Basic">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="inputKategori">Kategori</label>
+          <select id="inputKategori" class="select-input">
+            <option value="Fashion">Fashion</option>
+            <option value="Elektronik">Elektronik</option>
+            <option value="Makanan">Makanan</option>
+            <option value="Aksesoris">Aksesoris</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="inputHarga">Harga (Rp)</label>
+          <input type="number" id="inputHarga" min="0" required placeholder="75000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputStok">Stok</label>
+        <input type="number" id="inputStok" min="0" required placeholder="20">
+      </div>
+      <div class="form-group">
+        <label for="inputDeskripsi">Deskripsi</label>
+        <textarea id="inputDeskripsi" rows="2" placeholder="Deskripsi singkat produk..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="inputGambar">URL Gambar (opsional)</label>
+        <input type="text" id="inputGambar" placeholder="https://...">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelModalProduk">Batal</button>
+        <button type="submit" class="btn btn-primary" id="submitModalProduk">Simpan Produk</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MODAL: KONFIRMASI HAPUS ============ -->
+<div class="modal-overlay" id="modalHapus">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3>Hapus Produk</h3>
+      <button class="icon-btn" id="closeModalHapus"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p>Apakah kamu yakin ingin menghapus produk <strong id="hapusNamaProduk"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="cancelHapus">Batal</button>
+        <button class="btn btn-danger" id="confirmHapus"><i data-lucide="trash-2"></i> Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: SUKSES PENJUALAN ============ -->
+<div class="modal-overlay" id="modalSukses">
+  <div class="modal modal-sm modal-sukses">
+    <div class="modal-body text-center">
+      <div class="sukses-icon">🎉</div>
+      <h3>Penjualan berhasil!</h3>
+      <p id="suksesDetail"></p>
+      <button class="btn btn-primary btn-block" id="closeSukses">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOAST CONTAINER ============ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
